@@ -6,19 +6,19 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Update
-import com.tinhtx.customapplication.dao.entities.User
+import com.tinhtx.customapplication.dao.entities.ExpenseType
 
 @Dao
-interface UserDao {
-    @Query("SELECT * FROM user")
-    fun getAll(): List<User>
+interface ExpenseTypeDao {
+    @Query("SELECT * FROM expensetype")
+    fun getAll(): List<ExpenseType>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun insertAll(vararg users: User)
+    fun insertAll(vararg types: ExpenseType)
 
     @Update
-    fun updateUsers(vararg users: User)
+    fun updateType(vararg types: ExpenseType)
 
     @Delete
-    fun delete(user: User)
+    fun delete(type: ExpenseType)
 }

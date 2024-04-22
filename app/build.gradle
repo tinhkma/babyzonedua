@@ -112,4 +112,8 @@ dependencies {
 
     //Logger
     implementation 'com.jakewharton.timber:timber:5.0.1'
+
+    //UI
+    implementation 'com.github.lisawray.groupie:groupie:2.9.0'
+    implementation 'com.github.lisawray.groupie:groupie-viewbinding:2.9.0'
 }
