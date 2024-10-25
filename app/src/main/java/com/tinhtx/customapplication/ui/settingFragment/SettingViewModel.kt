@@ -17,31 +17,17 @@ class SettingViewModel @Inject constructor(
     private val settingRepository: SettingRepository
 ) : BaseViewModel() {
 
-    private val _dataView = SingleLiveEvent<List<Group>>()
-    val dataView: LiveData<List<Group>> = _dataView
-
-    private val _onActionDone = SingleLiveEvent<SettingDto>()
-    val onActionDone: LiveData<SettingDto> = _onActionDone
-
-    init {
-        disposables.addAll(
-            settingRepository.onActionDone.subscribe {
-                _onActionDone.postValue(it)
-            }
-        )
-    }
+    private val _dataUser = SingleLiveEvent<User>()
+    val dataUser: LiveData<User> = _dataUser
 
     @OnLifecycleEvent(Lifecycle.Event.ON_CREATE)
     fun updateDataView() {
-        _dataView.postValue(settingRepository.setupViewData())
+        _dataUser.postValue(settingRepository.getDataUser().firstOrNull())
     }
 
-    fun insertData(type: ExpenseType, name: String, limit: String) {
-        viewModelScope.launch(Dispatchers.Main) {
-            if (!type.type.isNullOrEmpty()) {
-                settingRepository.insertType(type)
-            }
-            settingRepository.insertUser(User(uid = 0, limit = limit, fullName = name))
+    fun insertData(limit: String) {
+        viewModelScope.launch(Dispatchers.IO) {
+            settingRepository.insertUser(limit)
         }
     }
 }

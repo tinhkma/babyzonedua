@@ -14,7 +14,7 @@ class Utils {
 
     companion object {
         const val DATE_DEFAULT_FORMAT = "dd/MM/yyyy HH:mm"
-        const val DECIMAL_FORMAT = "#,##0.00"
+        const val DECIMAL_FORMAT = "#,##0"
     }
 }
 

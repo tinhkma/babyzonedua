@@ -1,9 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <color name="black">#212121</color>
+    <color name="black_color">#000000</color>
     <color name="colorPrimary">#6923fe</color>
     <color name="colorPrimaryDark">#6923fe</color>
     <color name="colorAccent">#448AFF</color>
+    <color name="redColor">#F44336</color>
     <color name="textPrimary">#212121</color>
     <color name="textPrimaryDark">@color/black</color>
     <color name="textAccent">#757575</color>

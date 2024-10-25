@@ -6,6 +6,7 @@ import com.tinhtx.customapplication.R
 import com.tinhtx.customapplication.databinding.ItemDataInputHomeBinding
 import com.tinhtx.customapplication.model.HomeDto
 import com.tinhtx.customapplication.model.InputDto
+import com.tinhtx.customapplication.utils.Strings
 import com.xwray.groupie.viewbinding.BindableItem
 
 class HomeInputItem(val homeDto: HomeDto) : BindableItem<ItemDataInputHomeBinding>() {
@@ -43,9 +44,13 @@ class HomeInputItem(val homeDto: HomeDto) : BindableItem<ItemDataInputHomeBindin
                 }
             }
             it.viewFocus.setOnClickListener {
+                resetDataView(viewBinding)
                 homeDto.onClick?.invoke(it)
             }
         }
+    }
+    private fun resetDataView(binding: ItemDataInputHomeBinding) {
+        binding.edtTitle.setText(Strings.EMPTY)
     }
 
     override fun getLayout(): Int = R.layout.item_data_input_home

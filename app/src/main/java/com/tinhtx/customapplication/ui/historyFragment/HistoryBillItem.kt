@@ -10,10 +10,10 @@ import com.xwray.groupie.viewbinding.BindableItem
 class HistoryBillItem(val dailyExpense: DailyExpense) : BindableItem<ItemHistoryBinding>() {
     override fun bind(viewBinding: ItemHistoryBinding, position: Int) {
         viewBinding.let {
-            it.tvDate.text = dailyExpense.date
-            it.tvPrice.text = dailyExpense.price?.formatValue()
-            it.tvProduct.text = dailyExpense.product
-            it.tvType.text = dailyExpense.type?.type
+            val titleHeader = "${dailyExpense.type?.type} - ${dailyExpense.date}"
+            val description = "Buy ${dailyExpense.product} a total of ${dailyExpense.price?.formatValue()} VND."
+            it.tvProduct.text = description
+            it.tvProductTitle.text = titleHeader
         }
     }
 

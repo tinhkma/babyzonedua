@@ -1,6 +1,7 @@
 package com.tinhtx.customapplication.ui.homeFragment
 
 import android.content.Context
+import com.tinhtx.customapplication.R
 import com.tinhtx.customapplication.dao.DailyExpensesDao
 import com.tinhtx.customapplication.dao.ExpenseTypeDao
 import com.tinhtx.customapplication.dao.UserDao
@@ -8,6 +9,7 @@ import com.tinhtx.customapplication.dao.entities.DailyExpense
 import com.tinhtx.customapplication.dao.entities.ExpenseType
 import com.tinhtx.customapplication.dao.entities.User
 import com.tinhtx.customapplication.model.HomeDto
+import com.tinhtx.customapplication.ui.historyFragment.HistoryHeaderItem
 import com.tinhtx.customapplication.ui.homeFragment.itemView.HomeButtonItem
 import com.tinhtx.customapplication.ui.homeFragment.itemView.HomeDropInputItem
 import com.tinhtx.customapplication.ui.homeFragment.itemView.HomeInputItem
@@ -45,11 +47,16 @@ class HomeRepository @Inject constructor(
         val listGroup = mutableListOf<Group>()
         val dataUser = getDataUser()
         if (dataUser.isNotEmpty()) {
-            listGroup.add(HomeTitleItem("Hi ${dataUser.firstOrNull()?.fullName}!"))
+            listGroup.add(HomeTitleItem("Hi ${dataUser.firstOrNull()?.firstName}!", R.color.white))
         } else {
             listGroup.add(HomeSpaceItem())
             listGroup.add(HomeTitleItem("How are you today?"))
         }
+
+        val dataExpense = dailyExpensesDao.getAll()
+        val nowAvailable = getDataUser().firstOrNull()?.limit ?: Strings.EMPTY
+        val usedAmount = if (dataExpense.isNotEmpty()) dataExpense.sumOf { it.price?.toDouble() ?: 0.0 } else 0.0
+        listGroup.add(HistoryHeaderItem(usedAmount.toString(), nowAvailable))
         listGroup.add(
             HomeInputItem(
                 HomeDto(
@@ -95,7 +102,7 @@ class HomeRepository @Inject constructor(
         ))
         listGroup.add(HomeButtonItem(
             HomeDto(
-                homeViewType = HomeViewType.BUTTON_DONE, title = "Done",
+                homeViewType = HomeViewType.BUTTON_DONE, title = "Add",
                 onClick = {
                     if (it != null) {
                         hideSoftKeyboard(context, it)
@@ -134,6 +141,13 @@ class HomeRepository @Inject constructor(
 
     fun getAllType(): List<ExpenseType> {
         return expenseTypeDao.getAll()
+    }
+
+    fun insertType(type: String) {
+        val expenseType = ExpenseType(type = type)
+        if (!expenseType.type.isNullOrEmpty()) {
+            expenseTypeDao.insertAll(expenseType)
+        }
     }
 
     fun getAllExpenses(): List<DailyExpense> {

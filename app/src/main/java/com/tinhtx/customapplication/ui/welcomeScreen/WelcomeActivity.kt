@@ -6,6 +6,7 @@ import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
 import com.tinhtx.customapplication.R
 import com.tinhtx.customapplication.base.BaseActivity
+import com.tinhtx.customapplication.base.showToast
 import com.tinhtx.customapplication.databinding.ActivityWelcomeBinding
 import com.tinhtx.customapplication.ui.activity.MainActivity
 import com.tinhtx.customapplication.utils.LocalManager
@@ -35,11 +36,12 @@ class WelcomeActivity : BaseActivity<ActivityWelcomeBinding, WelcomeViewModel>()
 
     private fun updateUser() {
         binding.let {
-            val fullName = "${it.edtFirstName.text} ${it.edtLastName.text}"
-            viewModel.insertData(fullName)
-            if (fullName.isNotEmpty()) {
+            if (it.edtFirstName.text?.isNotEmpty() == true && it.edtLastName.text?.isNotEmpty() == true) {
+                viewModel.insertData(it.edtFirstName.text.toString().trim(), it.edtLastName.text.toString().trim())
                 startActivity(Intent(this, MainActivity::class.java))
                 finish()
+            } else {
+                showToast("Missing information!")
             }
         }
     }

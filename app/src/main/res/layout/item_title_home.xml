@@ -4,18 +4,18 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="64dp"
         android:gravity="center">
 
         <TextView
             android:id="@+id/title_screen"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:gravity="center"
-            android:paddingHorizontal="16dp"
+            android:gravity="start"
             android:text="How are you today?"
-            android:textColor="@color/colorPrimary"
-            android:textSize="18sp"
+            android:maxLines="1"
+            android:ellipsize="end"
+            android:paddingHorizontal="18dp"
+            android:textSize="20sp"
             android:textStyle="bold" />
     </LinearLayout>
 </layout>

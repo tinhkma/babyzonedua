@@ -10,7 +10,7 @@ class HistoryHeaderItem(val usedAmount: String, val nowAvailable: String) :
     BindableItem<ItemHeaderHistoryBinding>() {
     override fun bind(viewBinding: ItemHeaderHistoryBinding, position: Int) {
         viewBinding.let {
-            if (usedAmount != "-" && nowAvailable != "-") {
+            if (usedAmount.isNotEmpty() && nowAvailable.isNotEmpty()) {
                 it.availableAmount.text = nowAvailable.formatValue()
                 it.usedAmount.text = usedAmount.formatValue()
                 it.availableBalancesAmount.text =

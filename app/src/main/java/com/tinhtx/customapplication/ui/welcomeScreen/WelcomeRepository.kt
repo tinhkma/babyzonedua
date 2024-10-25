@@ -11,7 +11,7 @@ class WelcomeRepository @Inject constructor(
 ) {
 
     fun insertUser(user: User) {
-        if (user.fullName != "-")
+        if (!user.firstName.isNullOrEmpty() || !user.lastName.isNullOrEmpty())
             userDao.insertAll(user)
     }
 }

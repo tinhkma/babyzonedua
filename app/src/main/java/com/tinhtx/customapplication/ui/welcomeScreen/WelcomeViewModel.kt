@@ -11,9 +11,9 @@ class WelcomeViewModel @Inject constructor(
     private val welcomeRepository: WelcomeRepository
 ) : BaseViewModel() {
 
-    fun insertData(name: String) {
+    fun insertData(firstName: String, lastName: String) {
         viewModelScope.launch(Dispatchers.Main) {
-            welcomeRepository.insertUser(User(uid = 0, limit = "", fullName = name))
+            welcomeRepository.insertUser(User(uid = 0, limit = "", firstName, lastName))
         }
     }
 }
