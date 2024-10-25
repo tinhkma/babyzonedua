@@ -2,7 +2,6 @@ package com.tinhtx.customapplication.ui.homeFragment
 
 import android.app.DatePickerDialog
 import android.app.TimePickerDialog
-import android.util.Log
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -11,8 +10,6 @@ import com.tinhtx.customapplication.base.BaseFragment
 import com.tinhtx.customapplication.base.showToast
 import com.tinhtx.customapplication.databinding.FragmentHomeBinding
 import com.tinhtx.customapplication.ui.homeFragment.itemView.HomeInputItem
-import com.tinhtx.customapplication.ui.homeFragment.itemView.HomeTitleItem
-import com.tinhtx.customapplication.utils.Strings
 import com.tinhtx.customapplication.utils.convertDateToString
 import com.tinhtx.customapplication.utils.convertToMonthFormat
 import com.xwray.groupie.GroupAdapter
@@ -21,7 +18,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.util.Calendar
 import java.util.Date
-
 
 class HomeFragment : BaseFragment<FragmentHomeBinding, HomeViewModel>(), HomeListener {
     override val viewModelClass: Class<HomeViewModel> = HomeViewModel::class.java
@@ -76,7 +72,6 @@ class HomeFragment : BaseFragment<FragmentHomeBinding, HomeViewModel>(), HomeLis
         }
         val linearLayoutManager = LinearLayoutManager(context, RecyclerView.VERTICAL, false)
         layoutManager = linearLayoutManager
-
     }
 
     private fun getDatePicker() {
@@ -112,6 +107,5 @@ class HomeFragment : BaseFragment<FragmentHomeBinding, HomeViewModel>(), HomeLis
     }
 
     override fun onClickItem() {
-
     }
 }

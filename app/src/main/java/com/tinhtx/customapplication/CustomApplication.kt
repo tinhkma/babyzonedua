@@ -3,11 +3,10 @@ package com.tinhtx.customapplication
 import android.annotation.SuppressLint
 import android.content.Context
 import androidx.multidex.MultiDex
-import com.tinhtx.customapplication.dao.UserDao
+import com.tinhtx.customapplication.di.component.DaggerAppComponent
 import com.tinhtx.customapplication.utils.AppLogger
 import com.tinhtx.customapplication.utils.LocalManager
 import com.tinhtx.customapplication.utils.PreferenceManager
-import com.tinhtx.customapplication.di.component.DaggerAppComponent
 import dagger.android.AndroidInjector
 import dagger.android.support.DaggerApplication
 import javax.inject.Inject

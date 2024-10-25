@@ -8,7 +8,7 @@ import com.tinhtx.customapplication.databinding.FragmentHistoryBinding
 import com.xwray.groupie.GroupAdapter
 import com.xwray.groupie.GroupieViewHolder
 
-class HistoryFragment: BaseFragment<FragmentHistoryBinding, HistoryViewModel>() {
+class HistoryFragment : BaseFragment<FragmentHistoryBinding, HistoryViewModel>() {
     override val viewModelClass: Class<HistoryViewModel> = HistoryViewModel::class.java
     override val layoutRes: Int = R.layout.fragment_history
     private lateinit var recyclerView: RecyclerView
@@ -33,7 +33,5 @@ class HistoryFragment: BaseFragment<FragmentHistoryBinding, HistoryViewModel>() 
         }
         val linearLayoutManager = LinearLayoutManager(context, RecyclerView.VERTICAL, false)
         layoutManager = linearLayoutManager
-
     }
-
 }

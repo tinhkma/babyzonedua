@@ -1,5 +1,6 @@
 package com.tinhtx.customapplication.ui.activity
 
+import android.content.Intent
 import android.graphics.Rect
 import android.os.Bundle
 import android.view.MotionEvent
@@ -15,18 +16,26 @@ import com.tinhtx.customapplication.R
 import com.tinhtx.customapplication.base.BaseActivity
 import com.tinhtx.customapplication.base.showBackArrow
 import com.tinhtx.customapplication.databinding.ActivityMainBinding
+import com.tinhtx.customapplication.ui.introScreen.IntroActivity
+import com.tinhtx.customapplication.utils.LocalManager
+import javax.inject.Inject
 
-
-class MainActivity : BaseActivity<ActivityMainBinding, MainViewModel>(),
-    NavController.OnDestinationChangedListener {
+class MainActivity : BaseActivity<ActivityMainBinding, MainViewModel>(), NavController.OnDestinationChangedListener {
 
     override val viewModelClass: Class<MainViewModel> = MainViewModel::class.java
 
     override val layoutRes: Int = R.layout.activity_main
 
+    @Inject
+    lateinit var localManager: LocalManager
+
     override fun onDataBound(binding: ActivityMainBinding) {
         binding.viewModel = viewModel
         getNavController().addOnDestinationChangedListener(this)
+        if (!localManager.preferences.getBoolean("KEY_START_APP", false)) {
+            startActivity(Intent(this, IntroActivity::class.java))
+            finish()
+        }
     }
 
     private fun Toolbar.setup() {

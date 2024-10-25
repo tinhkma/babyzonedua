@@ -61,6 +61,7 @@ class HomeViewModel @Inject constructor(
     fun updateDataUser(user: User) {
         homeRepository.updateData(user)
     }
+
     private fun getDataUser() {
         viewModelScope.launch(Dispatchers.Main) {
             _dataUser.postValue(homeRepository.getDataUser())
@@ -84,6 +85,7 @@ class HomeViewModel @Inject constructor(
             homeRepository.updateDataDate(data)
         }
     }
+
     fun updateDataDailyExpense(dailyExpense: DailyExpense) {
         viewModelScope.launch(Dispatchers.IO) {
             homeRepository.insertDataExpenses(dailyExpense)

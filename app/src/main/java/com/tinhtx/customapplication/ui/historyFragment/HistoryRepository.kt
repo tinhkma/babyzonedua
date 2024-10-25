@@ -32,7 +32,7 @@ class HistoryRepository @Inject constructor(
         return listItem
     }
 
-    fun getDataUser(): List<User> {
+    private fun getDataUser(): List<User> {
         return userDao.getAll()
     }
 }

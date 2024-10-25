@@ -51,6 +51,5 @@ class SettingFragment : BaseFragment<FragmentSettingBinding, SettingViewModel>()
         }
         val linearLayoutManager = LinearLayoutManager(context, RecyclerView.VERTICAL, false)
         layoutManager = linearLayoutManager
-
     }
 }

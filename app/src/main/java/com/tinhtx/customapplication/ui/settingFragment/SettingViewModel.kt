@@ -38,7 +38,9 @@ class SettingViewModel @Inject constructor(
 
     fun insertData(type: ExpenseType, name: String, limit: String) {
         viewModelScope.launch(Dispatchers.Main) {
-            settingRepository.insertType(type)
+            if (!type.type.isNullOrEmpty()) {
+                settingRepository.insertType(type)
+            }
             settingRepository.insertUser(User(uid = 0, limit = limit, fullName = name))
         }
     }

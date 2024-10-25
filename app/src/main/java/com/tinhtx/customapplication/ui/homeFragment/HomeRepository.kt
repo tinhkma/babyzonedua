@@ -45,7 +45,7 @@ class HomeRepository @Inject constructor(
         val listGroup = mutableListOf<Group>()
         val dataUser = getDataUser()
         if (dataUser.isNotEmpty()) {
-            listGroup.add(HomeTitleItem("Welcome back ${dataUser.firstOrNull()?.fullName}!"))
+            listGroup.add(HomeTitleItem("Hi ${dataUser.firstOrNull()?.fullName}!"))
         } else {
             listGroup.add(HomeSpaceItem())
             listGroup.add(HomeTitleItem("How are you today?"))

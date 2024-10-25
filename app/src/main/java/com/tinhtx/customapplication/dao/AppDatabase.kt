@@ -14,7 +14,7 @@ import dagger.Module
 @Module
 @Database(entities = [User::class, DailyExpense::class, ExpenseType::class, LocationLatLong::class], version = 1)
 @TypeConverters(ExpenseTypeConverter::class, LocationConverter::class)
-abstract class AppDatabase: RoomDatabase() {
+abstract class AppDatabase : RoomDatabase() {
     abstract fun userDao(): UserDao
     abstract fun typeDao(): ExpenseTypeDao
     abstract fun dailyExpenseDao(): DailyExpensesDao

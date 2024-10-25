@@ -2,21 +2,13 @@ package com.tinhtx.customapplication.ui.introScreen
 
 import android.content.Intent
 import android.graphics.Rect
-import android.os.Bundle
-import android.view.MotionEvent
 import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
-import androidx.appcompat.widget.Toolbar
-import androidx.navigation.NavController
-import androidx.navigation.NavDestination
-import androidx.navigation.findNavController
-import androidx.navigation.ui.NavigationUI.setupWithNavController
-import androidx.navigation.ui.setupActionBarWithNavController
+import androidx.viewpager2.widget.ViewPager2
+import com.google.android.material.tabs.TabLayoutMediator
 import com.tinhtx.customapplication.R
 import com.tinhtx.customapplication.base.BaseActivity
-import com.tinhtx.customapplication.base.showBackArrow
 import com.tinhtx.customapplication.databinding.ActivityIntroBinding
-import com.tinhtx.customapplication.databinding.ActivityMainBinding
 import com.tinhtx.customapplication.ui.loginScreen.LoginActivity
 
 class IntroActivity : BaseActivity<ActivityIntroBinding, IntroViewModel>() {
@@ -30,9 +22,15 @@ class IntroActivity : BaseActivity<ActivityIntroBinding, IntroViewModel>() {
 
         binding.btnNextLogin.setOnClickListener {
             startActivity(Intent(this, LoginActivity::class.java))
+            finish()
         }
-    }
 
+        val viewPager = findViewById<ViewPager2>(R.id.view_pager)
+        val imageUrls = listOf(R.drawable.image_template, R.drawable.image_template, R.drawable.image_template)
+        val adapter = ImagePagerAdapter(imageUrls)
+        viewPager.adapter = adapter
+        TabLayoutMediator(binding.intoTabLayout, viewPager) { tab, position -> }.attach()
+    }
 
     fun clearFocus() {
         val v = currentFocus

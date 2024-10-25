@@ -6,7 +6,6 @@ import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
 import com.tinhtx.customapplication.R
 import com.tinhtx.customapplication.base.BaseActivity
-import com.tinhtx.customapplication.databinding.ActivityIntroBinding
 import com.tinhtx.customapplication.databinding.ActivityLoginBinding
 import com.tinhtx.customapplication.ui.welcomeScreen.WelcomeActivity
 
@@ -21,9 +20,9 @@ class LoginActivity : BaseActivity<ActivityLoginBinding, LoginViewModel>() {
 
         binding.btnNextWelcome.setOnClickListener {
             startActivity(Intent(this, WelcomeActivity::class.java))
+            finish()
         }
     }
-
 
     fun clearFocus() {
         val v = currentFocus

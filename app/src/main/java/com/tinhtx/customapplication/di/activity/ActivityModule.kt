@@ -3,13 +3,10 @@ package com.tinhtx.customapplication.di.activity
 import androidx.lifecycle.ViewModelProvider
 import com.tinhtx.customapplication.di.viewModel.ViewModelFactory
 import com.tinhtx.customapplication.ui.activity.MainActivity
-import com.tinhtx.customapplication.ui.historyFragment.HistoryModule
-import com.tinhtx.customapplication.ui.homeFragment.HomeModule
 import com.tinhtx.customapplication.ui.introScreen.IntroActivity
 import com.tinhtx.customapplication.ui.introScreen.IntroModule
 import com.tinhtx.customapplication.ui.loginScreen.LoginActivity
 import com.tinhtx.customapplication.ui.loginScreen.LoginModule
-import com.tinhtx.customapplication.ui.settingFragment.SettingModule
 import com.tinhtx.customapplication.ui.welcomeScreen.WelcomeActivity
 import com.tinhtx.customapplication.ui.welcomeScreen.WelcomeModule
 import dagger.Binds

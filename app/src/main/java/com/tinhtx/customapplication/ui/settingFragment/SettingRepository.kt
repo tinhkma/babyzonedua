@@ -1,7 +1,6 @@
 package com.tinhtx.customapplication.ui.settingFragment
 
 import android.content.Context
-import com.tinhtx.customapplication.base.showToast
 import com.tinhtx.customapplication.dao.ExpenseTypeDao
 import com.tinhtx.customapplication.dao.UserDao
 import com.tinhtx.customapplication.dao.entities.ExpenseType
@@ -121,8 +120,11 @@ class SettingRepository @Inject constructor(
     }
 
     fun insertUser(user: User) {
-        if (user.fullName != "-")
-            userDao.insertAll(user)
+        if (user.fullName != "-") {
+            val newUser =
+                User(uid = getDataUser().firstOrNull()?.uid ?: 0, limit = user.limit, fullName = getDataUser().firstOrNull()?.fullName ?: "")
+            userDao.insertAll(newUser)
+        }
     }
 
     private fun updateDataSetting() {
@@ -132,5 +134,4 @@ class SettingRepository @Inject constructor(
             type = mType
         )
     }
-
 }

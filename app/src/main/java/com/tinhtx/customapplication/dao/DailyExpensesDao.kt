@@ -7,7 +7,6 @@ import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Update
 import com.tinhtx.customapplication.dao.entities.DailyExpense
-import com.tinhtx.customapplication.dao.entities.ExpenseType
 
 @Dao
 interface DailyExpensesDao {
