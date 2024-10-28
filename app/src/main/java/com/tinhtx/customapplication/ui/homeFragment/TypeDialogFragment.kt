@@ -9,24 +9,41 @@ import android.widget.TextView
 import androidx.fragment.app.DialogFragment
 import com.tinhtx.customapplication.R
 import com.tinhtx.customapplication.base.showToast
+import com.tinhtx.customapplication.databinding.DialogAddTypeBinding
+import com.tinhtx.customapplication.model.DialogDto
 
-class TypeDialogFragment(val homeViewModel: HomeViewModel) : DialogFragment() {
+class TypeDialogFragment(val data: DialogDto) : DialogFragment() {
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        val view = inflater.inflate(R.layout.dialog_add_type, container, false)
-        view.findViewById<TextView>(R.id.btn_ok).setOnClickListener {
-            val type = view.findViewById<TextView>(R.id.edt_type).text.toString()
-            if (type.isEmpty()) showToast("Fill all text box!!")
+        val binding = DialogAddTypeBinding.inflate(inflater, container, false)
+        applyView(binding)
+
+        binding.btnOk.setOnClickListener {
+            if (binding.edtType.text.toString().isEmpty()) showToast(data.errorText)
             else {
-                showToast("Save type done!")
-                homeViewModel.insertType(type)
+                data.onClickOk?.invoke(binding.edtType.text.toString())
             }
             dismiss()
         }
-        view.findViewById<TextView>(R.id.btn_cancel).setOnClickListener {
+        binding.btnCancel.setOnClickListener {
+            data.onClickCancel?.invoke(binding.edtType.text.toString())
             dismiss()
         }
-        return view
+        return binding.root
+    }
+
+    private fun applyView(binding: DialogAddTypeBinding) {
+        binding.title.text = data.title ?: ""
+        binding.description.apply {
+            text = data.description ?: ""
+            visibility = if (data.description.isNullOrEmpty()) View.GONE else View.VISIBLE
+        }
+        binding.btnOk.text = data.titleOk
+        binding.btnCancel.text = data.titleCancel
+        binding.edtType.apply {
+            hint = data.textHint ?: ""
+            inputType = data.textType ?: 0
+        }
     }
 
     override fun onResume() {

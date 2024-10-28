@@ -2,8 +2,9 @@ package com.tinhtx.customapplication.ui.homeFragment
 
 import android.app.DatePickerDialog
 import android.app.TimePickerDialog
+import android.text.InputType
+import android.view.View
 import android.widget.ArrayAdapter
-import android.widget.AutoCompleteTextView
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.lifecycleScope
 import com.tinhtx.customapplication.R
@@ -13,6 +14,7 @@ import com.tinhtx.customapplication.dao.entities.DailyExpense
 import com.tinhtx.customapplication.dao.entities.ExpenseType
 import com.tinhtx.customapplication.dao.entities.User
 import com.tinhtx.customapplication.databinding.FragmentHomeBinding
+import com.tinhtx.customapplication.model.DialogDto
 import com.tinhtx.customapplication.utils.Strings
 import com.tinhtx.customapplication.utils.convertDateToString
 import com.tinhtx.customapplication.utils.convertToMonthFormat
@@ -31,6 +33,8 @@ class HomeFragment : BaseFragment<FragmentHomeBinding, HomeViewModel>(), HomeLis
     private var mHour: Int = 0
     private var mMinute: Int = 0
     private var mType: ExpenseType? = null
+
+    private var adapter: ArrayAdapter<String>? = null
 
     override fun onDataBound(binding: FragmentHomeBinding) {
         binding.let {
@@ -64,12 +68,6 @@ class HomeFragment : BaseFragment<FragmentHomeBinding, HomeViewModel>(), HomeLis
                     resetDataView()
                 }
             }
-
-            it.btnAddType.setOnClickListener {
-                val dialogFragment = TypeDialogFragment(viewModel)
-                dialogFragment.isCancelable = false
-                dialogFragment.show(parentFragmentManager, "TypeDialogFragment")
-            }
         }
 
         lifecycleScope.launch(Dispatchers.Main) {
@@ -77,57 +75,102 @@ class HomeFragment : BaseFragment<FragmentHomeBinding, HomeViewModel>(), HomeLis
                 it.dataType.observe(this@HomeFragment) { dataType ->
                     val listType = dataType.map { it.type }
                     if (listType.isNotEmpty()) {
-                        val adapter = ArrayAdapter(
-                            this@HomeFragment.requireContext(), R.layout.list_item_dropdown, listType
-                        )
-                        (binding.typeDropDown as? AutoCompleteTextView)?.setAdapter(adapter)
-                        binding.typeDropDown.setOnItemClickListener { _, _, i, _ ->
+                        if (adapter == null) {
+                            adapter = ArrayAdapter(
+                                this@HomeFragment.requireContext(), R.layout.list_item_dropdown, listType
+                            )
+                            (this@HomeFragment.binding?.typeDropDown)?.setAdapter(adapter)
+                        }
+
+                        adapter?.clear()
+                        adapter?.addAll(it.dataType.value?.map { it.type } ?: emptyList())
+                        adapter?.notifyDataSetChanged()
+                        this@HomeFragment.binding?.typeDropDown?.setOnItemClickListener { _, _, i, _ ->
                             mType = dataType[i]
                         }
                     }
                 }
 
-                it.dataUser.observe(this@HomeFragment) { user ->
-                    updateDataHeader(user.firstOrNull())
-                    viewModel.getDataExpense()
-                    viewModel.dataDailyExpense.observe(this@HomeFragment) { dataDailyExpense ->
-                        updateDataHeader(user.firstOrNull(), dataDailyExpense)
-                    }
+                viewModel.dataHeader.observe(this@HomeFragment) { data ->
+                    updateDataHeader(data.second?.firstOrNull(), data?.first)
                 }
 
-                it.dataHeader.observe(this@HomeFragment) {
-                    it.second?.let { dataDailyExpense -> updateDataHeader(it.first, dataDailyExpense) }
+                it.onUpdateDone.observe(this@HomeFragment) {
+                    fetchAllData()
                 }
             }
         }
     }
 
-    private fun updateDataHeader(user: User?, dataDailyExpense: List<DailyExpense> = emptyList()) {
+    private fun updateDataHeader(user: User?, dataDailyExpense: List<DailyExpense>?) {
         val nowAvailable = user?.limit ?: Strings.EMPTY
         this@HomeFragment.binding?.let {
             it.titleScreen.text = "Hello, ${user?.firstName}"
-        }
-        if (nowAvailable.isNotEmpty()) {
-            val usedAmount = if (dataDailyExpense.isNotEmpty()) dataDailyExpense.sumOf {
-                it.price?.toDouble() ?: 0.0
-            } else 0.0
-            val available = nowAvailable.toDouble() - usedAmount.toString().toDouble()
-            val availableColor = if (available < 0.0) R.color.redColor
-            else R.color.colorPrimary
-            binding?.availableBalancesAmount?.setTextColor(
-                ContextCompat.getColor(
-                    requireContext(), availableColor
-                )
-            )
-            this@HomeFragment.binding?.let {
-                if (usedAmount.toString().isNotEmpty() && nowAvailable.isNotEmpty()) {
-                    it.availableAmount.text = nowAvailable.formatValue()
-                    it.usedAmount.text = usedAmount.toString().formatValue()
-                    it.availableBalancesAmount.text =
-                        (nowAvailable.toDouble() - usedAmount.toString().toDouble()).toString().formatValue()
+            it.btnAddType.apply {
+                if (user?.limit.isNullOrEmpty())
+                    setImageResource(R.drawable.ic_monney)
+                else
+                    setImageResource(R.drawable.img_add)
+
+                visibility = View.VISIBLE
+                setOnClickListener {
+                    if (user?.limit.isNullOrEmpty()) showDialogAddLimit()
+                    else showDialogAddType()
                 }
             }
         }
+        dataDailyExpense?.let {
+            if (nowAvailable.isNotEmpty()) {
+                val usedAmount = if (dataDailyExpense.isNotEmpty()) dataDailyExpense.sumOf {
+                    it.price?.toDouble() ?: 0.0
+                } else 0.0
+                val available = nowAvailable.toDouble() - usedAmount.toString().toDouble()
+                val availableColor = if (available < 0.0) R.color.redColor
+                else R.color.colorPrimary
+                binding?.availableBalancesAmount?.setTextColor(
+                    ContextCompat.getColor(
+                        requireContext(), availableColor
+                    )
+                )
+                this@HomeFragment.binding?.let {
+                    if (usedAmount.toString().isNotEmpty() && nowAvailable.isNotEmpty()) {
+                        it.availableAmount.text = nowAvailable.formatValue()
+                        it.usedAmount.text = usedAmount.toString().formatValue()
+                        it.availableBalancesAmount.text =
+                            (nowAvailable.toDouble() - usedAmount.toString().toDouble()).toString().formatValue()
+                    }
+                }
+            }
+        }
+    }
+
+    private fun showDialogAddType() {
+        val dialogDto = DialogDto(
+            title = "Add new type",
+            description = null,
+            textHint = "Type Information",
+            onClickOk = {
+                viewModel.insertType(it)
+            },
+        )
+        val dialogFragment = TypeDialogFragment(dialogDto)
+        dialogFragment.isCancelable = false
+        dialogFragment.show(parentFragmentManager, "TypeDialogFragment")
+    }
+
+    private fun showDialogAddLimit() {
+        val dialogDto = DialogDto(
+            title = "Add new limit",
+            description = null,
+            textHint = "Limit Information",
+            onClickOk = {
+                viewModel.updateDataUser(it)
+            },
+            textType = InputType.TYPE_CLASS_NUMBER
+        )
+        val dialogFragment = TypeDialogFragment(dialogDto)
+        dialogFragment.isCancelable = false
+        dialogFragment.show(parentFragmentManager, "LimitDialogFragment")
     }
 
     private fun resetDataView() {
@@ -135,8 +178,13 @@ class HomeFragment : BaseFragment<FragmentHomeBinding, HomeViewModel>(), HomeLis
         binding?.edtPrice?.setText(Strings.EMPTY)
         binding?.edtDate?.setText(Strings.EMPTY)
         binding?.typeDropDown?.setText(Strings.EMPTY)
-        viewModel.getDataExpense()
-        viewModel.getDataUser()
+        fetchAllData()
+    }
+
+    private fun fetchAllData() {
+        viewModel.getAllDataUser()
+        viewModel.getAllDataExpense()
+        viewModel.getAllType()
     }
 
     private fun getDatePicker() {

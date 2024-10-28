@@ -3,6 +3,7 @@ package com.tinhtx.customapplication.utils
 import android.content.Context
 import android.view.View
 import android.view.inputmethod.InputMethodManager
+import androidx.lifecycle.LiveData
 import java.text.DecimalFormat
 import java.text.DecimalFormatSymbols
 import java.text.ParseException
@@ -53,4 +54,15 @@ fun String.formatValue(): String {
     val formatter = DecimalFormat(Utils.DECIMAL_FORMAT)
     formatter.decimalFormatSymbols = DecimalFormatSymbols(Locale.JAPAN)
     return formatter.format(this.toDouble())
+}
+
+fun <T, R> LiveData<T>.mergeWith(other: LiveData<R>, combine: (T?, R?) -> Pair<T?, R?>): LiveData<Pair<T?, R?>> {
+    return androidx.lifecycle.MediatorLiveData<Pair<T?, R?>>().apply {
+        addSource(this@mergeWith) { value1 ->
+            value = combine(value1, other.value)
+        }
+        addSource(other) { value2 ->
+            value = combine(this@mergeWith.value, value2)
+        }
+    }
 }

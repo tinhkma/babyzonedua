@@ -28,133 +28,75 @@ import javax.inject.Singleton
 class HomeRepository @Inject constructor(
     private val userDao: UserDao,
     private val dailyExpensesDao: DailyExpensesDao,
-    private val expenseTypeDao: ExpenseTypeDao,
-    private val context: Context
+    private val expenseTypeDao: ExpenseTypeDao
 ) {
-    private val _updateData = BehaviorSubject.create<DailyExpense>()
-    val updateData: Observable<DailyExpense> = _updateData.hide()
-    private val _onActionDate = BehaviorSubject.create<Unit>()
-    val onActionDate: Observable<Unit> = _onActionDate.hide()
+    private val _dataHeader = BehaviorSubject.create<Pair<List<DailyExpense>?, List<User>?>>()
+    val dataHeader: Observable<Pair<List<DailyExpense>?, List<User>?>> = _dataHeader.hide()
 
-    var dailyExpense: DailyExpense? = null
+    private val _dataDailyExpense = BehaviorSubject.create<List<DailyExpense>>()
+    val dataDailyExpense: Observable<List<DailyExpense>> = _dataDailyExpense.hide()
 
-    var mProduct: String? = null
-    var mType: String? = null
-    var mDate: String? = null
-    var mPrice: String? = null
+    private val _onUpdateDone = BehaviorSubject.create<Unit>()
+    val onUpdateDone: Observable<Unit> = _onUpdateDone.hide()
 
-    fun setupViewData(): List<Group> {
-        val listGroup = mutableListOf<Group>()
-        val dataUser = getDataUser()
-        if (dataUser.isNotEmpty()) {
-            listGroup.add(HomeTitleItem("Hi ${dataUser.firstOrNull()?.firstName}!", R.color.white))
-        } else {
-            listGroup.add(HomeSpaceItem())
-            listGroup.add(HomeTitleItem("How are you today?"))
-        }
+    private val _dataType = BehaviorSubject.create<List<ExpenseType>>()
+    val dataType: Observable<List<ExpenseType>> = _dataType.hide()
 
-        val dataExpense = dailyExpensesDao.getAll()
-        val nowAvailable = getDataUser().firstOrNull()?.limit ?: Strings.EMPTY
-        val usedAmount = if (dataExpense.isNotEmpty()) dataExpense.sumOf { it.price?.toDouble() ?: 0.0 } else 0.0
-        listGroup.add(HistoryHeaderItem(usedAmount.toString(), nowAvailable))
-        listGroup.add(
-            HomeInputItem(
-                HomeDto(
-                    homeViewType = HomeViewType.PRODUCT,
-                    hint = "Product information",
-                    onChangeDone = {
-                        mProduct = it.dataProduct
-                        updateDailyExpense()
-                    }
-                )
-            )
-        )
-        listGroup.add(HomeInputItem(
-            HomeDto(
-                homeViewType = HomeViewType.PRICE,
-                hint = "Price information",
-                onChangeDone = {
-                    mPrice = it.dataPrice
-                    updateDailyExpense()
-                }
-            )
-        ))
-        listGroup.add(HomeInputItem(
-            HomeDto(
-                homeViewType = HomeViewType.DATE,
-                hint = "Date information",
-                onClick = {
-                    _onActionDate.onNext(Unit)
-                }
-            )
-        ))
-        listGroup.add(HomeDropInputItem(
-            HomeDto(
-                homeViewType = HomeViewType.TYPE,
-                hint = "Type information",
-                dataType = getAllType(),
-                onChangeDone = {
-                    mType = if (it.dataType == "-") null
-                    else it.dataType
-                    updateDailyExpense()
-                }
-            ), context = context
-        ))
-        listGroup.add(HomeButtonItem(
-            HomeDto(
-                homeViewType = HomeViewType.BUTTON_DONE, title = "Add",
-                onClick = {
-                    if (it != null) {
-                        hideSoftKeyboard(context, it)
-                    }
-                    dailyExpense?.let { data ->
-                        _updateData.onNext(data)
-                    }
-                }
-            )
-        ))
-        return listGroup
-    }
+    private val _dataUser = BehaviorSubject.create<List<User>>()
+    val dataUser: Observable<List<User>> = _dataUser.hide()
 
-    private fun updateDailyExpense() {
-        dailyExpense = DailyExpense(
-            type = ExpenseType(type = mType ?: Strings.EMPTY),
-            product = mProduct,
-            price = mPrice,
-            date = mDate,
-            location = null
-        )
-    }
-
-    fun updateDataDate(data: String) {
-        mDate = data
-        updateDailyExpense()
-    }
+    var sum = 2
+    var count = 0
 
     fun updateData(user: User) {
         userDao.insertAll(user)
     }
 
-    fun getDataUser(): List<User> {
-        return userDao.getAll()
+    fun getDataUser() {
+        _dataUser.onNext(userDao.getAll())
+        getDataDone()
     }
 
-    fun getAllType(): List<ExpenseType> {
-        return expenseTypeDao.getAll()
+    fun getAllType() {
+        _dataType.onNext(expenseTypeDao.getAll())
     }
 
     fun insertType(type: String) {
         val expenseType = ExpenseType(type = type)
         if (!expenseType.type.isNullOrEmpty()) {
+            _onUpdateDone.onNext(Unit)
             expenseTypeDao.insertAll(expenseType)
         }
     }
 
-    fun getAllExpenses(): List<DailyExpense> {
-        return dailyExpensesDao.getAll()
+    fun getAllExpenses() {
+        _dataDailyExpense.onNext(dailyExpensesDao.getAll())
+        getDataDone()
     }
 
     fun insertDataExpenses(expense: DailyExpense) {
         dailyExpensesDao.insertAll(expense)
+    }
+
+    fun updateDataUser(limit: String) {
+        if (limit.isNotEmpty()) {
+            val user = _dataUser.value?.firstOrNull()
+            val newUser = User(
+                uid = user?.uid ?: 0,
+                limit = limit,
+                firstName = user?.firstName ?: "",
+                lastName = user?.lastName ?: ""
+            )
+            _onUpdateDone.onNext(Unit)
+            userDao.insertAll(newUser)
+        }
+    }
+
+    private fun getDataDone() {
+        count++
+        if (count == sum) {
+            _dataHeader.onNext(Pair(_dataDailyExpense.value, _dataUser.value))
+            count = 0
+        }
     }
 }

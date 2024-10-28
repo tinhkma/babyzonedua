@@ -281,6 +281,7 @@
             android:src="@drawable/img_add"
             android:layout_margin="16dp"
             android:padding="8dp"
+            android:visibility="gone"
             android:background="@drawable/button_add_background"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent" />
