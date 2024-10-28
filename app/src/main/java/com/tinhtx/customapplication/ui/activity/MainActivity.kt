@@ -1,6 +1,11 @@
 package com.tinhtx.customapplication.ui.activity
 
+import android.content.Intent
+import android.graphics.Rect
 import android.os.Bundle
+import android.view.MotionEvent
+import android.view.inputmethod.InputMethodManager
+import android.widget.EditText
 import androidx.appcompat.widget.Toolbar
 import androidx.navigation.NavController
 import androidx.navigation.NavDestination
@@ -9,20 +14,28 @@ import androidx.navigation.ui.NavigationUI.setupWithNavController
 import androidx.navigation.ui.setupActionBarWithNavController
 import com.tinhtx.customapplication.R
 import com.tinhtx.customapplication.base.BaseActivity
-import com.tinhtx.customapplication.base.setVisibility
 import com.tinhtx.customapplication.base.showBackArrow
 import com.tinhtx.customapplication.databinding.ActivityMainBinding
+import com.tinhtx.customapplication.ui.introScreen.IntroActivity
+import com.tinhtx.customapplication.utils.LocalManager
+import javax.inject.Inject
 
-class MainActivity : BaseActivity<ActivityMainBinding, MainViewModel>(),
-    NavController.OnDestinationChangedListener {
+class MainActivity : BaseActivity<ActivityMainBinding, MainViewModel>(), NavController.OnDestinationChangedListener {
 
     override val viewModelClass: Class<MainViewModel> = MainViewModel::class.java
 
     override val layoutRes: Int = R.layout.activity_main
 
+    @Inject
+    lateinit var localManager: LocalManager
+
     override fun onDataBound(binding: ActivityMainBinding) {
         binding.viewModel = viewModel
         getNavController().addOnDestinationChangedListener(this)
+        if (!localManager.preferences.getBoolean("KEY_START_APP", false)) {
+            startActivity(Intent(this, IntroActivity::class.java))
+            finish()
+        }
     }
 
     private fun Toolbar.setup() {
@@ -61,5 +74,32 @@ class MainActivity : BaseActivity<ActivityMainBinding, MainViewModel>(),
     override fun onSupportNavigateUp(): Boolean {
         getNavController().navigateUp()
         return true
+    }
+
+    fun clearFocus() {
+        val v = currentFocus
+        if (v is EditText) {
+            val outRect = Rect()
+            v.getGlobalVisibleRect(outRect)
+            v.clearFocus()
+            val imm = getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
+            imm.hideSoftInputFromWindow(v.getWindowToken(), 0)
+        }
+    }
+
+    override fun dispatchTouchEvent(event: MotionEvent): Boolean {
+        if (event.action == MotionEvent.ACTION_DOWN) {
+            val v = currentFocus
+            if (v is EditText) {
+                val outRect = Rect()
+                v.getGlobalVisibleRect(outRect)
+                if (!outRect.contains(event.rawX.toInt(), event.rawY.toInt())) {
+                    v.clearFocus()
+                    val imm = getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
+                    imm.hideSoftInputFromWindow(v.getWindowToken(), 0)
+                }
+            }
+        }
+        return super.dispatchTouchEvent(event)
     }
 }

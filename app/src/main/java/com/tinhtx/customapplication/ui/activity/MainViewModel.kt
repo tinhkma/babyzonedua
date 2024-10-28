@@ -7,7 +7,7 @@ import javax.inject.Inject
 
 class MainViewModel @Inject constructor(
     private val mainRepository: MainRepository
-): BaseViewModel() {
+) : BaseViewModel() {
     private val _dataUser = SingleLiveEvent<List<String>>()
     val dataUser: LiveData<List<String>> = _dataUser
 

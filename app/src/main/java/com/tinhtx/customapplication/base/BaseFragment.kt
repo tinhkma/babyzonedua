@@ -9,6 +9,7 @@ import androidx.databinding.DataBindingUtil
 import androidx.databinding.ViewDataBinding
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProviders
+import com.tinhtx.customapplication.ui.activity.MainActivity
 import dagger.android.support.DaggerFragment
 import javax.inject.Inject
 
@@ -41,5 +42,9 @@ abstract class BaseFragment<T : ViewDataBinding, U : BaseViewModel> : DaggerFrag
         binding?.setLifecycleOwner(null)
         binding = null
         super.onDestroyView()
+    }
+
+    fun clearFocus() {
+        (activity as? MainActivity)?.clearFocus()
     }
 }

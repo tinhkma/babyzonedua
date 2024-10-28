@@ -8,6 +8,4 @@ import javax.inject.Singleton
 class HomeApiManager @Inject constructor(
     private val apiManager: ApiManager,
     private val homeApiClient: MainApiClient
-) {
-
-}
+)

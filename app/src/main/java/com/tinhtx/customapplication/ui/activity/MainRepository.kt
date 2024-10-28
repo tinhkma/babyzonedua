@@ -4,6 +4,4 @@ import javax.inject.Inject
 
 class MainRepository @Inject constructor(
     private val homeApiManager: HomeApiManager
-) {
-
-}
+)

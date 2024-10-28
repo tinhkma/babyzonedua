@@ -8,7 +8,7 @@ import dagger.Binds
 import dagger.Module
 
 @Suppress("unused")
-@Module(includes = [AndroidModule::class, ApiModule::class])
+@Module(includes = [AndroidModule::class, ApiModule::class, DatabaseModule::class])
 abstract class AppModule {
 
     @Binds
